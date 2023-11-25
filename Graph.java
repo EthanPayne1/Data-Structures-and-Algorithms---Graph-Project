@@ -81,9 +81,18 @@ public class Graph<V> implements IGraph<V> {
 
 
     @Override
-    public List<Integer> getNeighbors(V vertex) {
+    public List<V> getNeighbors(V vertex) {
         
-        return getNeighbors(vertices.indexOf(vertex));
+        List<V> result = new ArrayList<>();
+        int index = vertices.indexOf(vertex);
+        if (index != -1) {
+            for (Edge<V> edge : neighbors.get(index)) {
+                result.add(edge.targetVertex);
+            }
+        }
+
+        // return getNeighbors(vertices.indexOf(vertex));
+        return result;
     }
 
 
@@ -100,22 +109,22 @@ public class Graph<V> implements IGraph<V> {
         return getDegree(vertices.indexOf(vertex));
     }
 
-
-    boolean addEdge(Edge edges) {
-        if (edges.v < 0 || edges.v > getSize() - 1) {
+    
+    /*boolean addEdge(Edge edges) {
+        if (edges.sourceIndex < 0 || edges.sourceIndex > getSize() - 1) {
             throw new IllegalArgumentException("Index does not exist");
         }
-        if (edges.u < 0 || edges.u > getSize() -1) {
+        if (edges.targetVertex < 0 || edges.targetVertex > getSize() -1) {
             throw new IllegalArgumentException("Index does not exist");
         }
-        if (!neighbors.get(edges.v).contains(edges)) {
-            neighbors.get(edges.v).add(edges); return true;
+        if (!neighbors.get(edges.sourceIndex).contains(edges)) {
+            neighbors.get(edges.sourceIndex).add(edges); return true;
         }
         else return false;
-    }
+    } */
 
 
-    @Override
+   /*  @Override
     public boolean addEdge(int v1, int v2) {
         
         return addEdge(new Edge(v1,v2));
