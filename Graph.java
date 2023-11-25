@@ -8,7 +8,7 @@ import java.util.*;
 public class Graph<V> implements IGraph<V> {
 
     protected List<V> vertices; //-- Store the verticies
-    protected List<List<Edge>> neighbors; //-- Stores the adjaceny list
+    protected List<List<Edge<V>>> neighbors; //-- Stores the adjaceny list
     protected Map<Boolean, int[]> visited[]; //* Marks all of index as not visited (set false by default)
 
 
@@ -22,30 +22,44 @@ public class Graph<V> implements IGraph<V> {
     * @param vertices
     * @param edges
     */
-    protected Graph(List<V> vertices, List<Edge> edges) {
+   /*  protected Graph(List<V> vertices, List<Edge> edges) {
         this();
         for (int i = 0; i < vertices.size(); i++) {
             addVertex(vertices.get(i));
         }
         newAdjacentList(edges, vertices.size());
-    }
+    } */
 
     /**
     *-- Initialize the neighbors list from a list of edges
     * @param edges
     * @param numberOfVeratices
     */
-    private void newAdjacentList(List<Edge> edges, int numOfVertices) {
+   /*  private void newAdjacentList(List<Edge> edges, int numOfVertices) {
         for (Edge edge : edges) {
-            addEdge(edge.v,edge.u);
+            addEdge(edge.sourceIndex,edge.targetVertex);
+        }
+    } */
+
+
+    public void addEdge(V from, V to, int weight) {
+        int fromIndex = vertices.indexOf(from);
+        int toIndex = vertices.indexOf(to);
+        if (fromIndex != -1 && toIndex != -1) {
+            neighbors.get(fromIndex).add(new Edge<>(vertices.get(fromIndex),vertices.get(toIndex),weight));
+            neighbors.get(toIndex).add(new Edge<>(vertices.get(toIndex),vertices.get(fromIndex),weight));
         }
     }
 
-    @Override
-    public int getSize() {
 
-        return vertices.size();
-    }
+    //-- Possible replacement?
+    //-- New version of addVertex method
+    public void addVertex(V vertex) {
+        if (!vertices.contains(vertex)) {
+            vertices.add(vertex);
+            neighbors.add(new ArrayList<>());
+        }
+    } 
 
 
     @Override
@@ -73,8 +87,11 @@ public class Graph<V> implements IGraph<V> {
     public List<Integer> getNeighbors(int index) {
         
         List<Integer> result = new ArrayList<>();
-        for (Edge edge : neighbors.get(index)) {
-            result.add(edge.u);
+        index = vertices.indexOf(result);
+        if (index != -1) {
+            for (Edge<V> edge : neighbors.get(index)) {
+                result.add(null);
+            }
         }
         return result;
     }
@@ -134,25 +151,8 @@ public class Graph<V> implements IGraph<V> {
     public boolean addEdge(V vertex1, V vertex2) {
 
         return addEdge(new Edge(vertices.indexOf(vertex1), vertices.indexOf(vertex2)));
-    }
-
-
-    @Override
-    public boolean addVertex(V vertex) {
-        if (!vertices.contains(vertex)) {
-            vertices.add(vertex);
-            neighbors.add(new ArrayList<Edge>());
-            return true;
-        }
-        else return false;
-    }
-    //-- Possible replacement?
-    /*public void addVertex(V vertex) {
-        if (!vertices.contains(vertex)) {
-            vertices.add(vertex);
-            neighbors.add(new ArrayList<>());
-        }
     } */
+
 
 
     // Todo: Implement a breadth first search using the algorithm provided in the textbook. 
@@ -171,51 +171,74 @@ public class Graph<V> implements IGraph<V> {
                         (if adjVertex is not in discoveredSet)
                             Push adjVertext to fQueue
                             Add adjVertex to discoveredSet */
-
+    // ** This method was changed for testing
     @Override
-    public List<V> BFS(int index) {
-        boolean[] visited = new boolean[vertices.size()];
-        LinkedList<Integer> fQueue = new LinkedList<Integer>(); //* Creates a frontierQueue for the BFS
+    public List<V> BFS(V startVertex) {
         List<V> orderVisited = new ArrayList<>();
-        fQueue.add(index);
+        Queue<V> fQueue = new LinkedList<>(); //* Creates a frontierQueue for the BFS
+        boolean[] visited = new boolean[vertices.size()];
+        int startIndex = vertices.indexOf(startVertex);
+
+        if (startIndex != -1) {
+            fQueue.offer(startVertex);
+            visited[startIndex] = true;
+
+            while(!fQueue.isEmpty()) { 
+                V currentVertex = fQueue.poll();
+                orderVisited.add(currentVertex);
+                int currIndex = vertices.indexOf(currentVertex);
+                for (Edge<V> edge : neighbors.get(currIndex)) {
+                    V nextVertex = edge.targetVertex;
+                    int nextIndex = vertices.indexOf(nextVertex);
+                    
+                    if (!visited[nextIndex]) {
+                        fQueue.offer(nextVertex);
+                        visited[nextIndex] = true;
+                    }
+                }
+
+
+            }
+        }
+        return orderVisited;
+
+        /*fQueue.add(index);
         visited[index] = false;
         //-- Is this code redunant??
         visited[index] = true; //* Mark the current node as visited and add it
         fQueue.add(index);
         //-- Is this code redunant??
 
-        while(!fQueue.isEmpty()) { 
-            index = fQueue.pop();
-            System.out.println(index + " "); 
-            orderVisited.add(vertices.get(index));
-            List<Integer> adjVertex = getNeighbors(index);
-            for (int i = 0; i < adjVertex.size(); i++) {
-                Integer n = adjVertex.get(i);
-                if (!visited[n]) { 
-                    fQueue.add(n);
-                    visited[n] = true;
-                }
-            }
-            /** while(neighbors.hasNext()) {
+            * while(neighbors.hasNext()) {
                 neighbors.get(index);
                 List<AbstractGraph.Edge> n = i.next();
                 if(!visited[n]){
                     visited[n] = true;
                     queue.add(n);
                 }
-            } **/
-        }
-        return orderVisited;
+            } 
+            **/
+            
+    }
+    
+
+
+    @Override
+    public int getSize() {
+
+        return vertices.size();
     }
 
+    
+    public static class Edge<V> {
+        V sourceIndex, targetVertex;
+        int weight;
 
-    public static class Edge {
-        int v, u;
 
-
-        public Edge(int v, int u) {
-            this.u = u;
-            this.v = v;
+        public Edge(V sourceIndex, V targetVertex, int weight) {
+            this.targetVertex = targetVertex;
+            this.sourceIndex = sourceIndex;
+            this.weight = weight;
         }
 
         @Override
@@ -223,12 +246,13 @@ public class Graph<V> implements IGraph<V> {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Edge edge = (Edge) o;
-            return v == edge.v && u == edge.u;
+            return sourceIndex == edge.sourceIndex && targetVertex == edge.targetVertex;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(v, u);
+            return Objects.hash(sourceIndex, targetVertex);
         }
     }
+
 }

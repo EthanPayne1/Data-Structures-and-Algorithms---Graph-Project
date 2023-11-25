@@ -36,6 +36,7 @@ public interface IGraph<V> {
      */
     public int getIndex(V vertex);
 
+
     /**
      * -- Return the neighbors of the vertex associated with the specified index.
      * @param index
@@ -43,12 +44,14 @@ public interface IGraph<V> {
      */
     public List<Integer> getNeighbors(int index);
 
+
     /**
      * -- Returns the neighbors of the specified vertex.
      * @param vertex
      * @return
      */
-    public List<Integer> getNeighbors(V vertex);
+    public List<V> getNeighbors(V vertex);
+
 
     /**
      * -- Return the degree of a vertex with the specified index.
@@ -57,6 +60,7 @@ public interface IGraph<V> {
      */
     public int getDegree(int index);
 
+
     /**
      * -- Returns the degree of a vertex.
      * @param vertex
@@ -64,21 +68,6 @@ public interface IGraph<V> {
      */
     public int getDegree(V vertex);
 
-    /**
-     * -- Add an edge to the graph between verticies with indicies u and v
-     * @param v1
-     * @param v2
-     * @return
-     */
-    public boolean addEdge(int v1, int v2);
-
-    /**
-     * -- Add an edge to the graph between vertex1 and vertex2
-     * @param vertex1
-     * @param vertex2
-     * @return
-     */
-    public boolean addEdge(V vertex1, V vertex2);
 
     /**
      * -- Add a vertex to the graph. 
@@ -86,15 +75,33 @@ public interface IGraph<V> {
      * @param vertex
      * @return
      */
-    public boolean addVertex(V vertex);
+    public void addVertex(V vertex);
 
+    
     /**
      * -- Obtain a list of vertices sorted by a breadth first search
      * -- Iterates through all nodes sequentially and adding all unseen nodes to the frontierQueue
      * @param index
      * @return
      */
-    public List<V> BFS(int index);
+    public List<V> BFS(V index);
+
+    /**
+     * -- Add an edge to the graph between verticies with indicies u and v
+     * @param v1
+     * @param v2
+     
+     * @return
+     */
+   ////public boolean addEdge(int v1, int v2);
+
+    /**
+     * -- Add an edge to the graph between vertex1 and vertex2
+     * @param vertex1
+     * @param vertex2
+     * @return
+     */
+    ////public boolean addEdge(V vertex1, V vertex2);
 
 
 }
