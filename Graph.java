@@ -108,7 +108,7 @@ public class Graph<V> implements IGraph<V> {
             }
         }
 
-        // return getNeighbors(vertices.indexOf(vertex));
+        //return getNeighbors(vertices.indexOf(vertex));
         return result;
     }
 
@@ -125,6 +125,8 @@ public class Graph<V> implements IGraph<V> {
         
         return getDegree(vertices.indexOf(vertex));
     }
+
+    
 
     
     /*boolean addEdge(Edge edges) {
@@ -221,6 +223,36 @@ public class Graph<V> implements IGraph<V> {
             
     }
     
+    @Override
+public List<V> DFS(V startVertex) {
+    List<V> orderVisited = new ArrayList<>();
+    Stack<V> stack = new Stack<>();
+    boolean[] visited = new boolean[vertices.size()];
+    int startIndex = vertices.indexOf(startVertex);
+
+    if (startIndex != -1) {
+        stack.push(startVertex);
+        visited[startIndex] = true;
+
+        while (!stack.isEmpty()) {
+            V currentVertex = stack.pop();
+            orderVisited.add(currentVertex);
+            int currIndex = vertices.indexOf(currentVertex);
+
+            for (Edge<V> edge : neighbors.get(currIndex)) {
+                V nextVertex = edge.targetVertex;
+                int nextIndex = vertices.indexOf(nextVertex);
+
+                if (!visited[nextIndex]) {
+                    stack.push(nextVertex);
+                    visited[nextIndex] = true;
+                }
+            }
+        }
+    }
+    return orderVisited;
+} 
+
 
 
     @Override

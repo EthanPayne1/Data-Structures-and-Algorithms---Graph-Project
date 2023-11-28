@@ -43,7 +43,7 @@ public interface IGraph<V> {
      * @return
      */
     public List<Integer> getNeighbors(int index);
-
+  
 
     /**
      * -- Returns the neighbors of the specified vertex.
@@ -85,6 +85,7 @@ public interface IGraph<V> {
      * @return
      */
     public List<V> BFS(V index);
+    public List<V> DFS(V startVertex);
 
     /**
      * -- Add an edge to the graph between verticies with indicies u and v

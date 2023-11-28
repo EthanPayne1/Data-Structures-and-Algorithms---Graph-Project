@@ -1,0 +1,6 @@
+Sully_Olvar Tatooine Dagobah Naboo Yavin Alderaan
+Maya Coruscant Hoth Endor Naboo Dagobah Yavin
+Mike Naboo Endor Dagobah
+Steve Dagobah Hoth Tatooine Yavin
+Zach Alderaan Naboo Hoth
+Luke Hoth Coruscant Yavin Dagobah Endor Hoth
