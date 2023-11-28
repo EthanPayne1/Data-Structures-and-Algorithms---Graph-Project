@@ -49,7 +49,9 @@ public class Graph<V> implements IGraph<V> {
             neighbors.get(fromIndex).add(new Edge<>(vertices.get(fromIndex),vertices.get(toIndex),weight));
             neighbors.get(toIndex).add(new Edge<>(vertices.get(toIndex),vertices.get(fromIndex),weight));
         }
+  
     }
+
 
 
     //-- Possible replacement?
@@ -90,7 +92,7 @@ public class Graph<V> implements IGraph<V> {
         index = vertices.indexOf(result);
         if (index != -1) {
             for (Edge<V> edge : neighbors.get(index)) {
-                result.add(null);
+                result.add(index);
             }
         }
         return result;

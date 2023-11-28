@@ -9,6 +9,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.*;
+
+
+
 import java.io.*;
 
 
@@ -55,11 +58,12 @@ public class Main {
 
             if (!isValid(pRoute.subList(1, pRoute.size()), graph)) {
                 //writer.print(pilotName + getWeight(graph, pilotName, pilotName) + "valid");
-                System.out.println(pilotName + "'s route is invalid\n------------------------");
+                writer.write((pilotName + "\t" + "0" + "\t" + "invalid" + "\n"));
             } 
             else {
                 //writer.println(pilotName + getWeight(graph, pilotName, pilotName) + "not valid");
-                System.out.println(pilotName + "'s route is valid\n------------------------");
+                int totalWeight = calculateRouteWeight(pRoute.subList(1, pRoute.size()), graph);
+                writer.write((pilotName + "\t" + totalWeight + "\t" + "valid"+ "\n"));
             }
             
         }
@@ -75,6 +79,23 @@ public class Main {
             }
         }
         return -1; // If there's no edge between the vertices
+    }
+
+    public static int calculateRouteWeight(List<String> route, Graph<String> graph) {
+        int totalWeight = 0;
+        for (int i = 0; i < route.size() - 1; i++) {
+            
+            String currentVertex = route.get(i);
+            String nextVertex = route.get(i + 1);
+            int weight = getWeight(graph, currentVertex, nextVertex);
+            
+            if (weight != -1) {
+                totalWeight += weight;
+            } else {
+                System.out.println("No edge found between " + currentVertex + " and " + nextVertex);
+            }
+        }
+        return totalWeight;
     }
 
 
@@ -100,15 +121,19 @@ public class Main {
                     String adjVertex = edge[0];
                     int weight = Integer.parseInt(edge[1]);
                     graph.addEdge(vertex, adjVertex, weight);
+                    
+
+                    
                 }
+                
             } fileScan.close();
             
             for (String vertex : graph.getVertices()) {
                 for (String neighbor : graph.getNeighbors(vertex)) {
                     int weight = getWeight(graph, vertex, neighbor);
-                    //System.out.print(vertex + " -> " + "(" + neighbor + ", Weight: " + weight + ") ");
+                    System.out.print(vertex + " -> " + "(" + neighbor + ", Weight: " + weight + ") ");
                 }
-                //System.out.println("\n");
+                System.out.println("\n");
             } 
 
         } catch (FileNotFoundException e) {
@@ -159,7 +184,9 @@ public class Main {
         } 
         return allRoutes;
     }
-    
+    //* Hoth is the is the first vertex in the graph 
+    //* Hoth's neighbors SHOULD be Coruscant, Dagobah, T
+    //* The ONLY thing to fix is making Endor connect to Hoth and Hoth to Endor.
   
     public static boolean isValid(List<String> pRoute, Graph<String> graph) {
         boolean isValidRoute = true;
@@ -169,41 +196,36 @@ public class Main {
             -- 2) The reason Maya is invalid is because nextVertex skips over Hoth(index 1) and goes to Endor(index 2) 
             --    which correctly flagged as invalid because Coruscant isnt connected to Endor!
             -- 3) if nextVertex at Index 1 != getNeighbors at Index 1, then the path is invalid because the */
-            System.out.println("Validating route: " + pRoute);
-            System.out.println();
-            System.out.println("Starting vertex: " + pRoute.get(0));
-            System.out.println();
-            
+        System.out.println("Validating route: " + pRoute);
+        System.out.println();
+        System.out.println("Starting vertex: " + pRoute.get(0));
+        System.out.println();
+        System.out.println("Hoths neighbors: " + graph.getNeighbors("Hoth"));
+        System.out.println("Endor neighbors: " + graph.getNeighbors("Endor"));
+        System.out.println("Dagobah neighbors: " + graph.getNeighbors("Dagobah"));
+        
             //System.out.println(pRoute.get(0));
-            for (int i = 1; i < pRoute.size(); i++) {
-                
-                String currVertex = pRoute.get(i-1);
-                
-                String nextVertex = pRoute.get(i);
-                System.out.println("Hoths neighbors: " + graph.getNeighbors("Hoth"));
-                System.out.println("Endor neighbors: " + graph.getNeighbors("Endor"));
+        for (int i = 1; i < pRoute.size(); i++) {
             
-            //String secondLastVertex = pRoute.get(i + 1);
+            String currVertex = pRoute.get(i-1);
             
-            //String lastVertex =
+            String nextVertex = pRoute.get(i);
+        
 
-            
-            
-            //List<String> finalNeighbor = graph.getNeighbors(secondLastVertex);
             List<String> neighbor = graph.getNeighbors(currVertex);
             List<String> nextNeighbor = graph.getNeighbors(nextVertex);
             List<String> visited = graph.BFS(currVertex); //-- Might still be usable 
-            System.out.println("Next vertex is: " +  nextVertex); System.out.println();
-            System.out.println("Checking connection between " + currVertex + " and " + nextVertex);
+            //System.out.println("Next vertex is: " +  nextVertex); System.out.println();
+            //System.out.println("Checking connection between " + currVertex + " and " + nextVertex);
 
             //- These two loops are working for all pilots EXCEPT Zach and Steve 
             if (!neighbor.contains(nextVertex) || !nextNeighbor.contains(currVertex)) {
 
-                System.out.println("CV Neighbors: " + neighbor); System.out.println();//** Neighbors are all correct!
+                //System.out.println("CV Neighbors: " + neighbor); System.out.println();//** Neighbors are all correct!
                 
-                System.out.println("NV Neighbors: " + nextNeighbor); System.err.println(); //** Neighbors are all correct!
+                //System.out.println("NV Neighbors: " + nextNeighbor); System.err.println(); //** Neighbors are all correct!
                 
-                System.out.println("Current Vertex: " + currVertex + ": Not valid (No path found to " + nextVertex + ")");
+                //System.out.println("Current Vertex: " + currVertex + ": Not valid (No path found to " + nextVertex + ")");
                 //System.out.println("This means the path was invalid");
                 isValidRoute = false;
                 
@@ -215,63 +237,21 @@ public class Main {
             //- The LAST 2 planets have to be neighbors or else it's false. This fixes Steve and Zach.
             else if (neighbor.contains(nextVertex) && nextNeighbor.contains(currVertex)) {
 
-                System.out.println("CV Neighbors: " + neighbor); System.out.println();//** Neighbors are all correct!
+                //System.out.println("CV Neighbors: " + neighbor); System.out.println();//** Neighbors are all correct!
                 
-                System.out.println("NV Neighbors: " + nextNeighbor); System.err.println(); //** Neighbors are all correct!
+                //System.out.println("NV Neighbors: " + nextNeighbor); System.err.println(); //** Neighbors are all correct!
                 //return true;
             }
-
-            //- Instead of checking if next equals visited at index 1
-            //- For Maya visited is saying "Hoth equals hoth"
-            //- Mayas path does NOT match the BFS order visited 
-            //- Maya is flagged as invalid because Endor (next vertex) isnt labeled as a neighbor of Hoth (current vertex) during 2nd iteration
-            //- Didnt fix the Steve and Zach issue
-            /*else if (neighbor.contains(nextVertex) && nextNeighbor.contains(currVertex) && nextVertex == visited.get(i)) {
-
-                System.out.println("CV Neighbors: " + neighbor); System.out.println();//** Neighbors are all correct!
-                
-                System.out.println("NV Neighbors: " + nextNeighbor); System.err.println(); //** Neighbors are all correct!
-                return true;
-            } */
-            
-
-            System.err.println();
+            System.out.println();
             currVertex = nextVertex;
-
-            //- Mayas path does NOT match the BFS order visited 
-            //- Maya is flagged as invalid because Endor (next vertex) isnt labeled as a neighbor of Hoth (current vertex) during 2nd iterator
-            //- Didnt fix the Steve and Zach issue
-            /*else if (nextVertex == visited.get(i)) {
-                return true;
-            }*/
-
-
-            
-            
-            //System.out.println("test: " + pRoute.get(0));
-            //system.out.println("Next vertex is: " +  pRoute.get(1)); System.out.println();
-            //System.out.println("CV Neighbors: " + graph.getNeighbors(pRoute.get(0))); //** Neighbors are all correct!
-            //System.out.println();System.out.println("Valid path");
         }
-        return isValidRoute;
+            return isValidRoute;
     }
+}
+
     
 
-    /* 
-        for (int i = 0; i < pRoute.size() - 1; i++) {
-            String currVertex = pRoute.get(i);
-            String nextVertex = pRoute.get(i + 1);
-            if (!graph.getNeighbors(currVertex).contains(nextVertex)) {
-                System.out.println("Not valid");
-                return false;
-            }
-        }
-        System.out.println("Valid path");
-        
-        return true;
-        
-
-    public static boolean isValid(List<String> pRoute, Graph<String> graph) {
+    /*public static boolean isValid(List<String> pRoute, Graph<String> graph) {
         System.out.println("Validating route: " + pRoute);
         System.out.println("Starting vertex: " + pRoute.get(0));
     
@@ -293,16 +273,8 @@ public class Main {
         }
     
         return true;
-    }   
+    }   */
 
-
-
-
-
-    }*/
-    
-    
-}
 
 
 //* Old code to be reused if needed
